@@ -19,11 +19,16 @@ void DHT() { //อุณหภูมิในอากาศ เขียนไ�
   humidity = dht.readHumidity();
   char mix_temp_humi[50];
   sprintf(mix_temp_humi, "Temperature %d \n Humidity %d", temperature ,humidity);
+
+  Serial.print("temperature : ");
   Serial.println(temperature);
+  Serial.print("humidity :");
   Serial.println(humidity);
+  delay(60);
 }
 void ultra() { //อุณหภูมิในอากาศ เขียนไม่เป็น
   int distance = hc.dist();
+  Serial.print("distance :"); //return current distance (cm) in serial
   Serial.println(distance); //return current distance (cm) in serial
   delay(60);
 }
