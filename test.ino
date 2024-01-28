@@ -37,6 +37,9 @@ void DHT() {
 }
 void ultra() { 
   int distance = hc.dist();
+  if (distance <= 20){
+    Serial.println("เติมน้ำ");
+  }
   Serial.print("distance :"); //return current distance (cm) in serial
   Serial.println(distance); //return current distance (cm) in serial
 
