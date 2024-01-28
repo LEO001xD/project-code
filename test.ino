@@ -99,3 +99,31 @@ void loop() {
 
   delay(100);
 }
+
+/*
+int moisture;
+#define SOI_PIN 2
+#define Relay1 14
+
+void setup() {
+  pinMode(SOI_PIN,INPUT);
+  pinMode(Relay1, OUTPUT);
+  Serial.begin(115200);
+}
+void soi_moisture_and_rod_nam() {//ความขื้นในดิน
+  moisture = analogRead(SOI_PIN); // read the analog value from sensor
+  Serial.print("Moisture in soi value: ");
+  Serial.println(moisture);
+  delay(500);
+  if(moisture<=1000){
+    digitalWrite(Relay1,HIGH);
+    } 
+  else{
+    digitalWrite(Relay1,LOW);
+    } 
+  }
+void loop() {
+  soi_moisture_and_rod_nam();
+  delay(100);
+}
+*/
