@@ -33,13 +33,13 @@ void DHT() {
   Serial.println(temperature);
   Serial.print("humidity :");
   Serial.println(humidity);
-  delay(60);
+  
 }
 void ultra() { 
   int distance = hc.dist();
   Serial.print("distance :"); //return current distance (cm) in serial
   Serial.println(distance); //return current distance (cm) in serial
-  delay(60);
+
 }
 void fillSolidColor(uint32_t color) { //neopixel
   for (int i = 0; i < strip.numPixels(); i++) {
