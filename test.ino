@@ -1,3 +1,4 @@
+
 #include <TridentTD_LineNotify.h>
 #include <WiFi.h>
 #define SSID "DX100"               
@@ -27,9 +28,15 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(12, 13, 16, 17, 18, 19);
 
+#define LDR_PIN 4
+int val_ldr;
+
 void setup() {
   pinMode(SOI_PIN,INPUT);
   pinMode(Relay1, OUTPUT);
+
+  pinMode(LDR_PIN,INPUT);
+
   dht.begin();
   
   strip.begin();
@@ -66,7 +73,7 @@ void DHT() {
 }
 void ultra() { 
   int distance = hc.dist();
-  if (distance <= 20){
+  if (distance >= 20){
     LINE.notify("เติมน้ำ");
   }
   Serial.print("distance :"); //return current distance (cm) in serial
@@ -80,7 +87,7 @@ void fillSolidColor(uint32_t color) { //neopixel
   strip.show();
 }
 void soi_moisture_and_rod_nam() {//ความขื้นในดิน
-  moisture = analogRead(SOI_PIN); // read the analog value from sensor
+    moisture = analogRead(SOI_PIN); // read the analog value from sensor
   Serial.print("Moisture in soi value: ");
   Serial.println(moisture);
   delay(500);
@@ -91,8 +98,14 @@ void soi_moisture_and_rod_nam() {//ความขื้นในดิน
     digitalWrite(Relay1,LOW);
     } 
   }
+void ldr(){
+  val_ldr = (analogRead(LDR_PIN));
+  Serial.print("LDR Sun :");
+  Serial.println(val_ldr);
+}
 void loop() {
   soi_moisture_and_rod_nam();
+  ldr();
   fillSolidColor(strip.Color(55, 10, 255)); // black light
   DHT();
   ultra();
