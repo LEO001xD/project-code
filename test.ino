@@ -1,6 +1,12 @@
+#define BLYNK_TEMPLATE_ID "TMPL6sbgFAXW0"
+#define BLYNK_TEMPLATE_NAME "Project"
+#define BLYNK_AUTH_TOKEN "MbXFGvPOOno5ZqH50ziatY0nMDaQ4mFa"
+#include <WiFiClient.h>
+#include <BlynkSimpleEsp32.h>
 
 #include <TridentTD_LineNotify.h>
 #include <WiFi.h>
+
 #define SSID "DX100"               
 #define PASSWORD "11111111"                      
 #define LINE_TOKEN "HUZldWYLqry1RakCi7gxmgTzjdxccHUwrrvApBWWs05"
@@ -31,6 +37,8 @@ LiquidCrystal lcd(12, 13, 16, 17, 18, 19);
 #define LDR_PIN 4
 int val_ldr;
 
+int get3;
+
 void setup() {
   pinMode(SOI_PIN,INPUT);
   pinMode(Relay1, OUTPUT);
@@ -43,6 +51,8 @@ void setup() {
   strip.show(); // ตั้งค่าสีเริ่มต้นให้ทุกหลอดเป็น 'ปิด'
 
   lcd.begin(16, 2);
+  
+  Blynk.begin(BLYNK_AUTH_TOKEN, SSID, PASSWORD);
 
   WiFi.begin(SSID, PASSWORD);
   Serial.printf("WiFi connecting to %s\n",  SSID);
@@ -50,8 +60,10 @@ void setup() {
     Serial.print(".");
     delay(400);
   }
-  Serial.printf("\nWiFi connected\nIP : ");
-  Serial.println(WiFi.localIP());
+  //Serial.printf("\nWiFi connected\nIP : ");
+  //Serial.println(WiFi.localIP());
+  Serial.println("");
+  Serial.println("WiFi connected");
 
   LINE.setToken(LINE_TOKEN);
   LINE.notify("line work");
@@ -67,12 +79,15 @@ void DHT() {
 
   Serial.print("temperature : ");
   Serial.println(temperature);
+  Blynk.virtualWrite(V2,temperature);
   Serial.print("humidity :");
   Serial.println(humidity);
   
 }
 void ultra() { 
   int distance = hc.dist();
+  int distance1 = 100-distance;
+  Blynk.virtualWrite(V1,distance1);
   if (distance >= 20){
     LINE.notify("เติมน้ำ");
   }
@@ -87,9 +102,10 @@ void fillSolidColor(uint32_t color) { //neopixel
   strip.show();
 }
 void soi_moisture_and_rod_nam() {//ความขื้นในดิน
-    moisture = analogRead(SOI_PIN); // read the analog value from sensor
+  moisture = analogRead(SOI_PIN); // read the analog value from sensor
   Serial.print("Moisture in soi value: ");
   Serial.println(moisture);
+  Blynk.virtualWrite(V4,moisture); 
   delay(500);
   if(moisture<=1000){
     digitalWrite(Relay1,HIGH);
@@ -103,10 +119,29 @@ void ldr(){
   Serial.print("LDR Sun :");
   Serial.println(val_ldr);
 }
+
+BLYNK_WRITE(V3) {
+  get3 = param.asInt();
+}
+
 void loop() {
+  Blynk.run();
   soi_moisture_and_rod_nam();
   ldr();
-  fillSolidColor(strip.Color(55, 10, 255)); // black light
+
+  if(get3==0){
+    fillSolidColor(strip.Color(0, 0, 0)); // turn off
+  }
+  else if(get3==1){
+    fillSolidColor(strip.Color(55, 10, 255)); // black light
+  }
+  else if(get3==2){
+    fillSolidColor(strip.Color(255, 255, 0)); // yellow
+  }
+  else{
+    //
+  }
+
   DHT();
   ultra();
 
