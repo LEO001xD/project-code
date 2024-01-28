@@ -1,3 +1,10 @@
+#include <TridentTD_LineNotify.h>
+#include <WiFi.h>
+#define SSID "DX100"               
+#define PASSWORD "11111111"                      
+#define LINE_TOKEN "HUZldWYLqry1RakCi7gxmgTzjdxccHUwrrvApBWWs05"
+
+
 #include <DHT.h>
 #define DHTPIN 15   // Digital pin connected to the DHT sensor
 #define DHTTYPE DHT11   // DHT sensor type
@@ -22,12 +29,25 @@ LiquidCrystal lcd(12, 13, 16, 17, 18, 19);
 
 void setup() {
   pinMode(SOI_PIN,INPUT);
+  pinMode(Relay1, OUTPUT);
   dht.begin();
   
   strip.begin();
   strip.show(); // ตั้งค่าสีเริ่มต้นให้ทุกหลอดเป็น 'ปิด'
 
   lcd.begin(16, 2);
+
+  WiFi.begin(SSID, PASSWORD);
+  Serial.printf("WiFi connecting to %s\n",  SSID);
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(400);
+  }
+  Serial.printf("\nWiFi connected\nIP : ");
+  Serial.println(WiFi.localIP());
+
+  LINE.setToken(LINE_TOKEN);
+  LINE.notify("line work");
   
   Serial.begin(115200);
 }
@@ -47,7 +67,7 @@ void DHT() {
 void ultra() { 
   int distance = hc.dist();
   if (distance <= 20){
-    Serial.println("เติมน้ำ");
+    LINE.notify("เติมน้ำ");
   }
   Serial.print("distance :"); //return current distance (cm) in serial
   Serial.println(distance); //return current distance (cm) in serial
@@ -76,17 +96,6 @@ void loop() {
   fillSolidColor(strip.Color(55, 10, 255)); // black light
   DHT();
   ultra();
-
-  lcd.setCursor(0, 0);
-  lcd.print("Moisture : "); 
-  lcd.print(moisture);
-  lcd.print("        "); 
-  delay(100);
-  lcd.setCursor(0, 1);
-  lcd.print("Temperature : "); // dht ยังไม่เขียน
-  lcd.print(temperature);// dht ยังไม่เขียน
-  lcd.print("        "); 
-  delay(100);
 
   delay(100);
 }
