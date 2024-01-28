@@ -17,12 +17,17 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800
 #define SOI_PIN 2
 #define Relay1 14
 
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(12, 13, 16, 17, 18, 19);
+
 void setup() {
   pinMode(SOI_PIN,INPUT);
   dht.begin();
   
   strip.begin();
   strip.show(); // ตั้งค่าสีเริ่มต้นให้ทุกหลอดเป็น 'ปิด'
+
+  lcd.begin(16, 2);
   
   Serial.begin(115200);
 }
@@ -71,5 +76,17 @@ void loop() {
   fillSolidColor(strip.Color(55, 10, 255)); // black light
   DHT();
   ultra();
+
+  lcd.setCursor(0, 0);
+  lcd.print("Moisture : "); 
+  lcd.print(moisture);
+  lcd.print("        "); 
+  delay(100);
+  lcd.setCursor(0, 1);
+  lcd.print("Temperature : "); // dht ยังไม่เขียน
+  lcd.print(temperature);// dht ยังไม่เขียน
+  lcd.print("        "); 
+  delay(100);
+
   delay(100);
 }
